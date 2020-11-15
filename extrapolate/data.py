@@ -1,5 +1,5 @@
 import pandas as pd
-import matplotlib.pyplot as plt
+from extrapolate.vis import vis
 
 
 DATAFIELDS = [
@@ -20,7 +20,7 @@ OBS2CODE = {
 def params(filename="data/params.dat"):
     df = pd.read_table(filename, sep=r"\s+", names=PARAMFIELDS)
     df["name"] = df["name"].str.replace("'", "")
-    return df
+    return df.set_index("name")
 
 
 def dataset(energy, process="ds/dt pp", filename="data/pp-bpp-data-v8.dat"):
@@ -38,12 +38,7 @@ def dataset(energy, process="ds/dt pp", filename="data/pp-bpp-data-v8.dat"):
 
 def main():
     data = dataset((13000, 13000))
-    plt.errorbar(data["-t"], data["obs"],
-                 yerr=data["total err."], fmt='.', markersize=0.1)
-    plt.yscale("log")
-    plt.xlabel("$|t|$ (GeV$^{2}$)")
-    plt.ylabel(r"$d\sigma/dt$ (mb/GeV$^2$)")
-    plt.show()
+    vis(data)
 
 
 if __name__ == '__main__':

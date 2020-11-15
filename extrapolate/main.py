@@ -1,25 +1,48 @@
+import iminuit
 import numpy as np
 import matplotlib.pyplot as plt
+
+from iminuit.cost import LeastSquares
+from extrapolate.vis import vis
 from extrapolate.data import dataset, params
 
 
-def ds_standard(t, a1, b1, a2, b2, p1, b3, p2, c3):
+def ds(t, a1, b1, a2, b2, p1, b3, p2, c3):
     im = a1 * np.exp(-b1 * t) - a2 * np.exp(-b2 * t)
     re = p1 * np.exp(-b3 * t) - p2 * np.exp(-c3 * t)
     return re ** 2 + im ** 2
 
 
+def fit(data, pars, func):
+    loss = LeastSquares(data["-t"], data["obs"], data["total err."], ds)
+    minimizer = iminuit.Minuit(loss, pedantic=False, **pars)
+    minimizer.migrad(ncall=10000)
+    minimizer.hesse(ncall=10000)
+    minimizer.minos(ncall=10000)
+
+    print()
+    print("energy at t\\neq 0", data["s"].min(), data["s"].max())
+    print("|t|", data["-t"].min(), data["-t"].max())
+    print("chi^2_tot ", minimizer.fval)
+    print("chi^2/dof ", minimizer.fval / (len(data) - minimizer.nfit))
+    return minimizer
+
+
 def main():
     data = dataset((62.400, 62.600))
     data = data[data["-t"].between(0.5, 2.5)]
+    pars = params()
+    print(pars)
+    pars = pars.dropna()["value"].to_dict()
 
-    plt.errorbar(data["-t"], data["obs"],
-                 yerr=data["total err."], fmt='.', markersize=0.1)
+    m = fit(data, pars, ds)
+    print(m.params)
 
-    plt.yscale("log")
-    plt.xlabel("$|t|$ (GeV$^{2}$)")
-    plt.ylabel(r"$d\sigma/dt$ (mb/GeV$^2$)")
-    plt.show()
+    with vis(data, label="pp 62.5 Amaldi"):
+        t = data["-t"]
+        plt.plot(t, ds(t, **pars), label="fit 1")
+        plt.plot(t, ds(t, **m.values), label="new")
+        plt.legend()
 
 
 if __name__ == '__main__':
