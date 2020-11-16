@@ -1,19 +1,16 @@
 import pandas as pd
+from operator import attrgetter
 
 
 class Params:
-    fields = ["id", "name", "value", "err", "lower", "upper"]
+    fields = ["number", "name", "value", "error", "lower_limit", "upper_limit"]
 
-    def __init__(self, filename="data/params.dat", dropna=True):
-        df = pd.read_table(filename, sep=r"\s+", names=self.fields)
-        if dropna:
-            df = df.dropna()
-        df["name"] = df["name"].str.replace("'", "")
+    def __init__(self, df):
         self.df = df.set_index("name")
 
     @property
     def limits(self):
-        limits = self.df[["lower", "upper"]]
+        limits = self.df[["lower_limit", "upper_limit"]].copy()
         limits.index = "limit_" + limits.index
         limits["limit"] = limits.apply(tuple, axis=1)
         return limits["limit"].to_dict()
@@ -28,3 +25,23 @@ class Params:
         if limits:
             output.update(self.limits)
         return output
+
+    @classmethod
+    def from_minuit(cls, params):
+        df = pd.DataFrame({"raw": params})
+        for field in cls.fields:
+            df[field] = df["raw"].apply(attrgetter(field))
+
+        # Fortran indexing
+        return cls(df.drop(columns=["raw"]))
+
+    @classmethod
+    def from_dat(cls, filename="data/params.dat", dropna=True):
+        df = pd.read_table(filename, sep=r"\s+", names=cls.fields)
+        if dropna:
+            df = df.dropna()
+        df["name"] = df["name"].str.replace("'", "")
+        return cls(df)
+
+    def __repr__(self):
+        return str(self.df.set_index("number"))

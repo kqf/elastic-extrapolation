@@ -30,10 +30,10 @@ def fit(data, pars, func):
 def main():
     data = dataset((62.400, 62.600))
     data = data[data["-t"].between(0.5, 2.5)]
-    pars = Params()
+    pars = Params.from_dat()
 
     m = fit(data, pars.to_minuit(), ds)
-    print(m.params)
+    print(Params.from_minuit(m.params))
 
     with vis(data, label="pp 62.5 Amaldi"):
         t = data["-t"]
