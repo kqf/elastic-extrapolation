@@ -1,5 +1,19 @@
 import pandas as pd
+
+from contextlib import contextmanager
 from operator import attrgetter
+
+
+@contextmanager
+def custom_format(custom):
+    standard = pd.get_option('display.float_format')
+    pd.set_option('display.float_format', custom)
+    yield
+    pd.set_option('display.float_format', standard)
+
+
+def scientific(x, pattern="{:.5E}"):
+    return pattern.format(x)
 
 
 class Params:
@@ -44,4 +58,5 @@ class Params:
         return cls(df)
 
     def __repr__(self):
-        return str(self.df.set_index("number"))
+        with custom_format(scientific):
+            return str(self.df.set_index("number"))

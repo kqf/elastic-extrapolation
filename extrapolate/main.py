@@ -33,7 +33,10 @@ def main():
     pars = Params.from_dat()
 
     m = fit(data, pars.to_minuit(), ds)
-    print(Params.from_minuit(m.params))
+    pars_fitted = Params.from_minuit(m.params)
+    print(pars_fitted)
+    print(pars_fitted.df)
+    return
 
     with vis(data, label="pp 62.5 Amaldi"):
         t = data["-t"]
