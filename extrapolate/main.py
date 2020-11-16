@@ -19,11 +19,15 @@ def fit(data, pars, func):
     minimizer = iminuit.Minuit(loss, pedantic=False, **pars)
     minimizer.migrad(ncall=10000)
 
-    print()
-    print("energy at t\\neq 0", data["s"].min(), data["s"].max())
-    print("|t|", data["-t"].min(), data["-t"].max())
-    print("chi^2_tot ", minimizer.fval)
-    print("chi^2/dof ", minimizer.fval / (len(data) - minimizer.nfit))
+    # Print the short summary
+    print("energy at t\\neq 0 :", data["s"].min(), data["s"].max())
+    print("|t|               :", data["-t"].min(), data["-t"].max())
+    print("chi^2_tot         :", minimizer.fval)
+    print("chi^2/dof         :", minimizer.fval / (len(data) - minimizer.nfit))
+
+    pars_fitted = Params.from_minuit(minimizer.params)
+    print(pars_fitted)
+    print(pars_fitted.df)
     return minimizer
 
 
@@ -32,16 +36,17 @@ def main():
     data = data[data["-t"].between(0.5, 2.5)]
     pars = Params.from_dat()
 
-    m = fit(data, pars.to_minuit(), ds)
-    pars_fitted = Params.from_minuit(m.params)
-    print(pars_fitted)
-    print(pars_fitted.df)
-    return
+    print("Fit with the same limits")
+    m_limits = fit(data, pars.to_minuit(), ds)
+
+    print("Fit with no limits")
+    m_no_limits = fit(data, pars.values, ds)
 
     with vis(data, label="pp 62.5 Amaldi"):
         t = data["-t"]
-        plt.plot(t, ds(t, **pars.values), label="fit 1")
-        plt.plot(t, ds(t, **m.values), label="new")
+        plt.plot(t, ds(t, **pars.values), label="initial values")
+        plt.plot(t, ds(t, **m_limits.values), label="fit (same limits)")
+        plt.plot(t, ds(t, **m_no_limits.values), label="fit (no limits)")
         plt.legend()
 
 

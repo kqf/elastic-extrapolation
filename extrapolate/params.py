@@ -59,4 +59,4 @@ class Params:
 
     def __repr__(self):
         with custom_format(scientific):
-            return str(self.df.set_index("number"))
+            return str(self.df)
