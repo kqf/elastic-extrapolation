@@ -6,11 +6,6 @@ DATAFIELDS = [
     "s", "-t", "obs", "stat", "syst", "total err.", "code"
 ]
 
-PARAMFIELDS = [
-    "id", "name", "value", "err", "lower", "upper"
-]
-
-
 OBS2CODE = {
     "ds/dt pp": 310,
     "ds/dt p#bar{p}": 311,
