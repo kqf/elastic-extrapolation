@@ -50,7 +50,7 @@ class Params:
         return cls(df.drop(columns=["raw"]))
 
     @classmethod
-    def from_dat(cls, filename="data/params.dat", dropna=True):
+    def from_dat(cls, filename="config/params.dat", dropna=True):
         df = pd.read_table(filename, sep=r"\s+", names=cls.fields)
         if dropna:
             df = df.dropna()
