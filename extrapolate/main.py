@@ -32,8 +32,7 @@ def fit(data, pars, func):
 
 
 def main():
-    data = dataset((62.400, 62.600))
-    data = data[data["-t"].between(0.5, 2.5)]
+    data = dataset(energy=(62.400, 62.600), t=(0.5, 2.5))
     pars = Params.from_dat()
 
     print("Fit with the same limits")

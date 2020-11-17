@@ -7,27 +7,26 @@ DATAFIELDS = [
 ]
 
 OBS2CODE = {
-    "ds/dt pp": 310,
-    "ds/dt p#bar{p}": 311,
+    "pp": 310,
+    "p#bar{p}": 311,
 }
 
 
-def params(filename="data/params.dat"):
-    df = pd.read_table(filename, sep=r"\s+", names=PARAMFIELDS)
-    df["name"] = df["name"].str.replace("'", "")
-    return df.set_index("name")
-
-
-def dataset(energy, process="ds/dt pp", filename="data/pp-bpp-data-v8.dat"):
+def dataset(energy, t, process="pp", filename="data/pp-bpp-data-v8.dat"):
     data = pd.read_csv(
         filename,
         sep=r"\s+",
         names=DATAFIELDS,
         usecols=[i for i, _ in enumerate(DATAFIELDS)]
     )
+    # Ensure the right process
     data = data[data['code'] == OBS2CODE[process]]
+
+    # Select the energy
     data = data[data['s'].between(*energy)]
-    data['-t'] = data['-t'].astype('float64')
+
+    # Select the |t| interval
+    data = data[data['-t'].between(*t)]
     return data
 
 
