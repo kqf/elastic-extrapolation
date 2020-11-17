@@ -1,5 +1,6 @@
 import iminuit
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 from iminuit.cost import LeastSquares
@@ -31,22 +32,24 @@ def fit(data, pars, func):
     return minimizer
 
 
+def configs(filename="config/energies.json"):
+    df = pd.read_json(filename)
+    df = df[df["energy"].str[0] < 100]
+    fields = df[["energy", "t", "filename", "process"]]
+    return fields.to_dict(orient="records")
+
+
 def main():
-    data = dataset(energy=(62.400, 62.600), t=(0.5, 2.5))
-    pars = Params.from_dat()
+    for config in configs():
+        data = dataset(**config)
+        pars = Params.from_dat()
 
-    print("Fit with the same limits")
-    m_limits = fit(data, pars.to_minuit(), ds)
+        m = fit(data, pars.values, ds)
 
-    print("Fit with no limits")
-    m_no_limits = fit(data, pars.values, ds)
-
-    with vis(data, label="pp 62.5 Amaldi"):
-        t = data["-t"]
-        plt.plot(t, ds(t, **pars.values), label="initial values")
-        plt.plot(t, ds(t, **m_limits.values), label="fit (same limits)")
-        plt.plot(t, ds(t, **m_no_limits.values), label="fit (no limits)")
-        plt.legend()
+        label = "{} {}".format(config["process"], config["energy"][0])
+        with vis(data, label=label):
+            plt.plot(data["-t"], ds(data["-t"], **m.values), label="fit")
+            plt.legend()
 
 
 if __name__ == '__main__':
