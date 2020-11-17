@@ -19,17 +19,29 @@ def fit(data, pars, func):
     loss = LeastSquares(data["-t"], data["obs"], data["total err."], ds)
     minimizer = iminuit.Minuit(loss, pedantic=False, **pars)
     minimizer.migrad(ncall=10000)
-
-    # Print the short summary
-    print("energy at t\\neq 0 :", data["s"].min(), data["s"].max())
-    print("|t|               :", data["-t"].min(), data["-t"].max())
-    print("chi^2_tot         :", minimizer.fval)
-    print("chi^2/dof         :", minimizer.fval / (len(data) - minimizer.nfit))
-
-    pars_fitted = Params.from_minuit(minimizer.params)
-    print(pars_fitted)
-    print(pars_fitted.df)
     return minimizer
+
+
+def dump(data, minimizer, label, outfile="output.dat"):
+    with open(outfile, "a") as f:
+        print(label, file=f)
+        print("--------------------", file=f)
+        # TODO: Clean this
+        msg = "energy at t\\neq 0 :"
+        print(msg, data["s"].min(), data["s"].max(), file=f)
+        msg = "|t|               :"
+        print(msg, data["-t"].min(), data["-t"].max(), file=f)
+        msg = "chi^2_tot         :"
+        print(msg, minimizer.fval, file=f)
+        msg = "chi^2/dof         :"
+        print(msg, minimizer.fval / (len(data) - minimizer.nfit), file=f)
+
+        pars_fitted = Params.from_minuit(minimizer.params)
+        print(pars_fitted, file=f)
+
+    print(label)
+    print("--------------------")
+    print(pars_fitted.df)
 
 
 def configs(filename="config/energies.json"):
@@ -43,13 +55,15 @@ def main():
     for config in configs():
         data = dataset(**config)
         pars = Params.from_dat()
+        label = "{} {}".format(config["process"], config["energy"][0])
 
         m = fit(data, pars.values, ds)
+        dump(data, m, label)
 
-        label = "{} {}".format(config["process"], config["energy"][0])
         with vis(data, label=label):
             plt.plot(data["-t"], ds(data["-t"], **m.values), label="fit")
             plt.legend()
+            plt.savefig(f"{label}.png")
 
 
 if __name__ == '__main__':
