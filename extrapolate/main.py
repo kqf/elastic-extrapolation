@@ -46,7 +46,12 @@ def dump(data, minimizer, label, outfile="output.dat"):
 
 def configs(filename="config/energies.json"):
     df = pd.read_json(filename)
+
+    # Take only low energy
     df = df[df["energy"].str[0] < 100]
+
+    # Consider only pp data
+    df = df[df["process"] == "pp"]
     fields = df[["energy", "t", "filename", "process"]]
     return fields.to_dict(orient="records")
 
