@@ -6,12 +6,11 @@ from contextlib import contextmanager
 def vis(data, func, label=None):
     f, (a0, a1) = plt.subplots(
         2, 1,
-        gridspec_kw={'height_ratios': [3, 1]},
+        gridspec_kw={'height_ratios': [3, 1], 'hspace': 0},
         sharex=True)
 
     a0.errorbar(data["-t"], data["obs"],
                 yerr=data["total err."], fmt='.', markersize=0.1, label=label)
-    # a0.yscale("log")
 
     a0.plot(data["-t"], func(data["-t"]), label="fit")
 
@@ -20,6 +19,7 @@ def vis(data, func, label=None):
     a0.legend()
 
     a1.plot(data["-t"], data["obs"] / func(data["-t"]), '.')
+    a1.plot(data["-t"], data["-t"] * 0. + 1., 'k--')
     a1.set_xlabel("$|t|$ (GeV$^{2}$)")
     a1.set_ylabel("$\\frac{\\rm{data}}{\\rm{fit}}$")
 
