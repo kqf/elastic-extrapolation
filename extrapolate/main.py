@@ -3,8 +3,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from functools import partial
 from iminuit.cost import LeastSquares
-from extrapolate.vis import vis
+from extrapolate.vis import plot
 from extrapolate.data import dataset
 from extrapolate.params import Params
 
@@ -65,10 +66,7 @@ def main():
         m = fit(data, pars.values, ds)
         dump(data, m, label)
 
-        with vis(data, label=label):
-            plt.plot(data["-t"], ds(data["-t"], **m.values), label="fit")
-            plt.legend()
-            plt.savefig(f"{label}.png")
+        plot(data, partial(ds, **m.values), label=label)
 
 
 if __name__ == '__main__':
