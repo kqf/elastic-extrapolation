@@ -64,12 +64,10 @@ def main():
         pars = Params.from_dat()
         label = "{} {}".format(config["process"], config["energy"][0])
 
-        func = compose(ds, amplitude)
-        m = fit(data, pars.values, func)
+        m = fit(data, pars.values, compose(ds, amplitude))
         dump(data, m, label)
 
-        func = compose(ds, partial(amplitude, **m.values))
-        plot(data, func, label=label)
+        plot(data, partial(amplitude, **m.values), label=label)
 
 
 if __name__ == '__main__':

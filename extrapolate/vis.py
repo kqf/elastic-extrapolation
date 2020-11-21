@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
+
 from contextlib import contextmanager
+from extrapolate.observables import ds, rho
 
 
 @contextmanager
@@ -19,7 +21,8 @@ def vis(data, func, label=None):
     )
 
     t, y, dy = data["-t"], data["obs"], data["total err."]
-    yhat = func(t)
+    amplitude = func(t)
+    yhat = ds(amplitude)
 
     # Plot the data and the fitted function
     a1.errorbar(t, y, yerr=dy, label=label, **errorbar_cfg)
@@ -36,7 +39,7 @@ def vis(data, func, label=None):
     a2.set_ylabel("$\\frac{\\rm{data}}{\\rm{fit}}$")
 
     # Plot the real to imaginary ratio
-    a4.errorbar(t, func(t), label="fit")
+    a4.errorbar(t, rho(amplitude), label="fit")
     a4.set_ylabel(r"$\rho(t)$")
     a4.set_xlabel("$|t|$ (GeV$^{2}$)")
 
