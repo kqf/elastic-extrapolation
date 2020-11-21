@@ -1,23 +1,24 @@
 import iminuit
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
+from toolz.functoolz import compose
 from functools import partial
 from iminuit.cost import LeastSquares
 from extrapolate.vis import plot
 from extrapolate.data import dataset
 from extrapolate.params import Params
+from extrapolate.observables import ds
 
 
-def ds(t, a1, b1, a2, b2, p1, b3, p2, c3):
+def amplitude(t, a1, b1, a2, b2, p1, b3, p2, c3):
     im = a1 * np.exp(-b1 * t) - a2 * np.exp(-b2 * t)
     re = p1 * np.exp(-b3 * t) - p2 * np.exp(-c3 * t)
-    return re ** 2 + im ** 2
+    return re + im * 1j
 
 
 def fit(data, pars, func):
-    loss = LeastSquares(data["-t"], data["obs"], data["total err."], ds)
+    loss = LeastSquares(data["-t"], data["obs"], data["total err."], func)
     minimizer = iminuit.Minuit(loss, pedantic=False, **pars)
     minimizer.migrad(ncall=10000)
     return minimizer
@@ -63,10 +64,10 @@ def main():
         pars = Params.from_dat()
         label = "{} {}".format(config["process"], config["energy"][0])
 
-        m = fit(data, pars.values, ds)
+        m = fit(data, pars.values, compose(ds, amplitude))
         dump(data, m, label)
 
-        plot(data, partial(ds, **m.values), label=label)
+        plot(data, partial(amplitude, **m.values), label=label)
 
 
 if __name__ == '__main__':
