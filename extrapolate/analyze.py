@@ -40,9 +40,11 @@ def dump(data, minimizer, label, outfile="output.dat"):
     print(pars_fitted.df)
 
 
-def analyze(energy, t, process="pp", filename="data/pp-bpp-data-v8.dat"):
-    data = dataset(energy, t, process, filename)
-    pars = Params.from_dat()
+def analyze(energy, t, process="pp",
+            datafile="data/pp-bpp-data-v8.dat",
+            parmsfile="config/params.dat"):
+    data = dataset(energy, t, process, datafile)
+    pars = Params.from_dat(filename=parmsfile)
     label = "{} {}".format(process, energy[0])
 
     m = fit(data, pars.values, compose(ds, standard))
