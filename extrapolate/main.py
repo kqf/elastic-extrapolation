@@ -58,7 +58,7 @@ def configs(filename="config/energies.json"):
 
 
 def main():
-    for config in configs():
+    for config in configs()[:1]:
         data = dataset(**config)
         pars = Params.from_dat()
         label = "{} {}".format(config["process"], config["energy"][0])
