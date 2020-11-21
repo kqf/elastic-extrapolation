@@ -11,9 +11,9 @@ OBS2CODE = {
 }
 
 
-def dataset(energy, t, process="pp", filename="data/pp-bpp-data-v8.dat"):
+def dataset(energy, t, process="pp", datafile="data/pp-bpp-data-v8.dat"):
     data = pd.read_csv(
-        filename,
+        datafile,
         sep=r"\s+",
         names=DATAFIELDS,
         usecols=[i for i, _ in enumerate(DATAFIELDS)]

@@ -3,4 +3,7 @@ plots.zip: %.png
 
 %.png: extrapolate/*.py
 	rm -f output.dat
-	python extrapolate/main.py
+	pytest -s tests/test_main.py
+
+debug: extrapolate/*.py tests/*.py
+	pytest -s tests/test_$@.py
