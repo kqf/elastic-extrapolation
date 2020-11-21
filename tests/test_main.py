@@ -19,6 +19,6 @@ def configs(filename="config/energies.json"):
 
 
 @pytest.mark.onlylocal
-def test_main(configs):
+def test_main(configs, datafile):
     for config in configs:
         analyze(**config)
