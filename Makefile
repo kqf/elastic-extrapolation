@@ -6,4 +6,4 @@ plots.zip: %.png
 	pytest -s tests/test_main.py
 
 debug: extrapolate/*.py tests/*.py
-	python pytest/test_$@.py
+	pytest -s tests/test_$@.py
