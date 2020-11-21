@@ -44,4 +44,4 @@ def test_debug(configs, params):
         plot(data, partial(standard, **pars.values), label="no fit")
         func = compose(ds, partial(standard, **pars.values))
         loss = LeastSquares(data["-t"], data["obs"], data["total err."], func)
-        print("Chi^2", loss)
+        print("Chi^2", loss())
