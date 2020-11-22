@@ -7,3 +7,8 @@ plots.zip: %.png
 
 debug: extrapolate/*.py tests/*.py
 	pytest -s tests/test_$@.py
+
+clean:
+	rm -f *.zip *.png output.dat
+
+.PHONY: clean debug

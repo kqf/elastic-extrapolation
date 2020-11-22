@@ -15,7 +15,7 @@ from extrapolate.amplitudes import standard
 def fit(data, pars, func):
     loss = LeastSquares(data["-t"], data["obs"], data["total err."], func)
     minimizer = iminuit.Minuit(loss, pedantic=True, **pars)
-    minimizer.migrad(ncall=10000)
+    print(minimizer.migrad(ncall=10000))
     return minimizer
 
 
@@ -31,6 +31,8 @@ def _dump(f, data, minimizer, label, outfile="output.dat"):
     print(msg, minimizer.fval, file=f)
     msg = "chi^2/dof         :"
     print(msg, minimizer.fval / (len(data) - minimizer.nfit), file=f)
+    posdef = "NOT " if minimizer.fmin.has_made_posdef_covar else ""
+    print("Covariance matrix : {}Pos. Def.".format(posdef), file=f)
 
 
 def dump(data, minimizer, label, outfile="output.dat"):
