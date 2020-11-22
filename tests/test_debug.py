@@ -15,7 +15,7 @@ from extrapolate.observables import ds
 
 @pytest.fixture
 def params():
-    return "config/params1.dat"
+    return "config/params.dat"
 
 
 @pytest.fixture
