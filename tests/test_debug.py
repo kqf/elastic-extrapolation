@@ -33,7 +33,6 @@ def configs(filename="config/energies.json"):
     return fields.to_dict(orient="records")
 
 
-@pytest.mark.onlylocal
 def test_debug(configs, params, datafile):
     for config in configs:
         analyze(**config)
