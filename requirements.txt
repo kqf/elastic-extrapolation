@@ -3,4 +3,5 @@ numpy
 matplotlib
 iminuit
 pytest
+pytest-cov
 toolz
