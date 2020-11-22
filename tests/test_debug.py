@@ -15,7 +15,7 @@ from extrapolate.observables import ds
 
 @pytest.fixture
 def params():
-    return "config/params1.dat"
+    return "config/params.dat"
 
 
 @pytest.fixture
@@ -23,7 +23,7 @@ def configs(filename="config/energies.json"):
     df = pd.read_json(filename)
 
     # Take only low energy
-    df = df[df["energy"].str[0].between(62.3, 62.5)]
+    df = df[df["energy"].str[0].between(62.3, 62.51)]
 
     # Consider only pp data
     df = df[df["process"] == "pp"]
@@ -33,8 +33,7 @@ def configs(filename="config/energies.json"):
     return fields.to_dict(orient="records")
 
 
-@pytest.mark.onlylocal
-def test_debug(configs, params):
+def test_debug(configs, params, datafile):
     for config in configs:
         analyze(**config)
 
